@@ -136,7 +136,7 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
 
 @app.post("/api/accuse")
 def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_token)): 
-    # Hardcode Suspect C for now as the true culprit
+    # Hardcode Suspect C for now
     correct_culprit = "C"
     
     conn = database.get_db_connection()
@@ -145,22 +145,32 @@ def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_tok
     if not session:
         conn.close()
         raise HTTPException(status_code=404, detail="Session not found")
-        
-    is_correct = data.accused_suspect == correct_culprit
-    status = "won" if is_correct else "lost"
+
+    total_q = session["total_questions"]
+    minutes_elapsed = total_q * 3
+    hours = 4 + (minutes_elapsed // 60)
+    minutes = minutes_elapsed % 60
+    final_time = f"{hours:02d}:{minutes:02d} AM"
     
-    # Score calculation (for now): 100 max, minus 5 for every question asked. Min 10 points for winning.
-    score = max(10, 100 - (session["total_questions"] * 5)) if is_correct else 0
+    if data.accused_suspect == 'TIMEOUT':
+        status = "lost"
+        is_correct = False
+        summary = "The clock struck 7:00 AM. The FBI walked in and took over jurisdiction. You were taken off the case, and the killer walked free."
+    else:
+        is_correct = data.accused_suspect == correct_culprit
+        status = "won" if is_correct else "lost"
+        summary = "Suspect C cracked under pressure. You solved the case!" if is_correct else "You locked up an innocent citizen. The real killer got away."
     
-    conn.execute("UPDATE game_sessions SET status = ?, score = ? WHERE id = ?", (status, score, data.session_id))
+    conn.execute("UPDATE game_sessions SET status = ? WHERE id = ?", (status, data.session_id))
     conn.commit()
     conn.close()
     
     return {
         "outcome": status,
         "correct": is_correct,
-        "score": score,
-        "summary": "Suspect C cracked under pressure. You solved the case!" if is_correct else "You locked up an innocent citizen. The killer got away!"
+        "time": final_time,
+        "questions": total_q,
+        "summary": summary
     }
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
