@@ -2,3 +2,5 @@ fastapi
 uvicorn
 pydantic
 pyjwt
+requests
+python-dotenv
