@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interrogation Room - Final Verdict</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="view">
+        <div class="result-card">
+            <h2>Case Review Board</h2>
+            
+            <div id="result-outcome">
+                <p>Review your notes carefully before making your final charge.</p>
+            </div>
+            
+            <div id="accusal-selection-zone">
+                <p>Select which suspect you are filing formal charges against:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                    <button onclick="submitFinalAccusation('A')">Arrest Suspect A</button>
+                    <button onclick="submitFinalAccusation('B')">Arrest Suspect B</button>
+                    <button onclick="submitFinalAccusation('C')">Arrest Suspect C</button>
+                </div>
+            </div>
+            
+            <button id="retry-btn" class="hidden" style="margin-top: 20px;" onclick="window.location.href='/index.html'">Open a New Case File</button>
+        </div>
+    </div>
+
+    <script src="results.js"></script>
+</body>
+</html>
