@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interrogation Room - Active Case</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="view">
+        <header>
+            <h3>Case File #404: The Precinct Murder</h3>
+            <span id="badge-display">Detective: Unknown</span>
+        </header>
+
+        <div class="game-container">
+            <div class="suspect-tabs">
+                <button id="tab-A" class="tab-btn active" onclick="switchSuspect('A')">Suspect A (Gemini)</button>
+                <button id="tab-B" class="tab-btn" onclick="switchSuspect('B')">Suspect B (Llama)</button>
+                <button id="tab-C" class="tab-btn" onclick="switchSuspect('C')">Suspect C (Mistral)</button>
+            </div>
+
+            <div class="chat-wrapper">
+                <div id="chat-box" class="chat-box">
+                    <p class="system-msg">You step inside. Three individuals sit waiting across the table. Choose a suspect tab above to begin questioning.</p>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="player-input" placeholder="Type an interrogation question..." onkeypress="if(event.key === 'Enter') sendQuestion()">
+                    <button onclick="sendQuestion()">Demand Answers</button>
+                </div>
+            </div>
+            
+            <div class="action-panel">
+                <h4>Case Actions</h4>
+                <p>Ready to declare your official findings?</p>
+                <button class="accuse-btn" onclick="goToAccusalView()">File Formal Accusation</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="interrogation.js"></script>
+</body>
+</html>
