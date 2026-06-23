@@ -13,11 +13,11 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 SYSTEM_PROMPTS = {
-    "A": "You are Officer Rookie, Suspect A in a murder investigation. The Chief was killed at 10 PM. You are completely innocent but very nervous. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Keep your answers under 3 sentences.",
+    "A": "You are Officer Rookie, a suspect in a murder investigation. The Chief was killed at 10 PM. You are completely innocent but very nervous. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Keep your answers under 3 sentences.",
     
-    "B": "You are General Stone, Suspect B in a murder investigation. The Chief was killed at 10 PM. You are innocent of the murder, but you are hiding an illegal gambling ring you run. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Keep answers under 3 sentences.",
+    "B": "You are General Stone, a suspect in a murder investigation. The Chief was killed at 10 PM. You are innocent of the murder, but you are hiding an illegal gambling ring you run. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Keep answers under 3 sentences.",
     
-    "C": "You are Lieutenant Cross, Suspect C. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. CRUCIAL RULE: If the detective asks what happened to the Chief are says something about him, you will accidentally say 'I can't believe he was poisoned', even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
+    "C": "You are Lieutenant Cross, a suspect in a murder investigation. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. CRUCIAL RULE: If the detective asks you or says something about the Chief, you will accidentally say 'I can't believe he was poisoned', even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
 }
 
 SECRET_KEY = "secret_jwt_key_password_that_is_very_long_and_secret"
@@ -95,7 +95,12 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
             # Route to OpenRouter
             model_name = "google/gemini-2.0-flash-exp:free" if data.suspect_id == 'A' else "meta-llama/llama-3.1-8b-instruct:free"
             
-            headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
+            headers = {
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "HTTP-Referer": "http://localhost:8000",
+                "X-Title": "Interrogation Room",
+                "Content-Type": "application/json"
+            }
             payload = {"model": model_name, "messages": ai_messages}
             response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
             response.raise_for_status() # raises if error
