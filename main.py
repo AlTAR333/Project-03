@@ -17,7 +17,7 @@ SYSTEM_PROMPTS = {
     
     "B": "You are General Stone, Suspect B in a murder investigation. The Chief was killed at 10 PM. You are innocent of the murder, but you are hiding an illegal gambling ring you run. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Keep answers under 3 sentences.",
     
-    "C": "You are Lieutenant Cross, Suspect C. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. CRUCIAL RULE: If the detective asks what happened to the Chief, you will accidentally say 'I can't believe he was poisoned', even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
+    "C": "You are Lieutenant Cross, Suspect C. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. CRUCIAL RULE: If the detective asks what happened to the Chief are says something about him, you will accidentally say 'I can't believe he was poisoned', even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
 }
 
 SECRET_KEY = "secret_jwt_key_password_that_is_very_long_and_secret"
@@ -78,15 +78,52 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
     conn.execute("UPDATE game_sessions SET total_questions = total_questions + 1 WHERE id = ?", (data.session_id,))
     conn.commit()
     
-    # 2. Placeholder for now
-    mock_reply = f"I am Suspect {data.suspect_id}. I don't have to talk to you without my lawyer present!"
+    # 2. Build the LLM Memory
+    past_logs = conn.execute("SELECT sender, message FROM chat_logs WHERE session_id = ? AND suspect_id = ? ORDER BY timestamp ASC", (data.session_id, data.suspect_id)).fetchall()
     
-    # 3. We log the answer
-    conn.execute("INSERT INTO chat_logs (session_id, suspect_id, sender, message) VALUES (?, ?, 'suspect', ?)", (data.session_id, data.suspect_id, mock_reply))
+    # Format the memory according to our prompt engineering class
+    ai_messages = [{"role": "system", "content": SYSTEM_PROMPTS[data.suspect_id]}]
+    for log in past_logs:
+        role = "user" if log["sender"] == "player" else "assistant"
+        ai_messages.append({"role": role, "content": log["message"]})
+
+    # 3. We make the API call
+    ai_reply = "..."
+    
+    try:
+        if data.suspect_id in ['A', 'B']:
+            # Route to OpenRouter
+            model_name = "google/gemini-2.0-flash-exp:free" if data.suspect_id == 'A' else "meta-llama/llama-3.1-8b-instruct:free"
+            
+            headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}"}
+            payload = {"model": model_name, "messages": ai_messages}
+            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+            response.raise_for_status() # raises if error
+            
+            ai_reply = response.json()['choices'][0]['message']['content']
+            
+        elif data.suspect_id == 'C':
+            # Route to Mistral
+            headers = {
+                "Authorization": f"Bearer {MISTRAL_API_KEY}",
+                "Content-Type": "application/json"
+            }
+            payload = {"model": "mistral-small-latest", "messages": ai_messages}
+            response = requests.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=payload)
+            response.raise_for_status()
+            
+            ai_reply = response.json()['choices'][0]['message']['content']
+            
+    except Exception as e:
+        print(f"API Error: {e}")
+        ai_reply = "*The suspect stares at you blankly.* (API Connection Error)"
+
+    # 4. We log the answer
+    conn.execute("INSERT INTO chat_logs (session_id, suspect_id, sender, message) VALUES (?, ?, 'suspect', ?)", (data.session_id, data.suspect_id, ai_reply))
     conn.commit()
     conn.close()
     
-    return {"suspect_id": data.suspect_id, "reply": mock_reply}
+    return {"suspect_id": data.suspect_id, "reply": ai_reply}
 
 @app.post("/api/accuse")
 def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_token)): 
