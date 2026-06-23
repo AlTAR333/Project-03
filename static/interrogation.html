@@ -7,37 +7,48 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="story-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <button class="close-btn" onclick="closeOverlay()">✖</button>
+            <div id="typewriter-text"></div>
+        </div>
+    </div>
+
     <div class="view">
-        <header>
-            <h3>Case File #404: The Precinct Murder</h3>
-            <span id="badge-display">Detective: Unknown</span>
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3>Case File #404: The Precinct Murder</h3>
+                <span id="badge-display">Detective: Unknown</span>
+            </div>
+            <div id="game-clock" class="digital-clock">04:00 AM</div>
         </header>
 
         <div class="game-container">
             <div class="suspect-tabs">
-                <button id="tab-A" class="tab-btn active" onclick="switchSuspect('A')">Suspect A</button>
-                <button id="tab-B" class="tab-btn" onclick="switchSuspect('B')">Suspect B</button>
-                <button id="tab-C" class="tab-btn" onclick="switchSuspect('C')">Suspect C</button>
+                <button id="tab-A" class="tab-btn active" onclick="switchSuspect('A')">Suspect A (Rookie)</button>
+                <button id="tab-B" class="tab-btn" onclick="switchSuspect('B')">Suspect B (General)</button>
+                <button id="tab-C" class="tab-btn" onclick="switchSuspect('C')">Suspect C (Lieutenant)</button>
             </div>
 
             <div class="chat-wrapper">
                 <div id="chat-box" class="chat-box">
-                    <p class="system-msg">You step inside. Three individuals sit waiting across the table. Choose a suspect tab above to begin questioning.</p>
+                    <p class="system-msg">The suspect is waiting for your questions.</p>
                 </div>
                 <div class="input-area">
                     <input type="text" id="player-input" placeholder="Type an interrogation question..." onkeypress="if(event.key === 'Enter') sendQuestion()">
-                    <button onclick="sendQuestion()">Demand Answers</button>
+                    <button onclick="sendQuestion()">Ask (3 Mins)</button>
                 </div>
             </div>
             
             <div class="action-panel">
                 <h4>Case Actions</h4>
-                <p>Ready to declare your official findings?</p>
+                <button class="review-btn" onclick="openOverlay()">Review Briefing</button>
+                
+                <p style="margin-top:20px;">Ready to declare your official findings?</p>
                 <button class="accuse-btn" onclick="goToAccusalView()">File Formal Accusation</button>
             </div>
         </div>
     </div>
-
     <script src="interrogation.js"></script>
 </body>
 </html>
