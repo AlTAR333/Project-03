@@ -1,0 +1,39 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+}
+.view { max-width: 900px; margin: 40px auto; }
+.hidden { display: none !important; }
+.auth-card, .result-card {
+    background: #2a2a2a; padding: 30px; border-radius: 8px;
+    border: 2px solid #ff3333; text-align: center;
+}
+input {
+    width: 80%; padding: 10px; margin: 10px 0;
+    background: #333; border: 1px solid #555; color: #fff;
+}
+button {
+    padding: 10px 20px; background: #ff3333; color: white;
+    border: none; cursor: pointer; font-weight: bold;
+}
+button:hover { background: #cc0000; }
+.game-container { display: grid; grid-template-columns: 1fr 250px; gap: 20px; margin-top: 20px; }
+.suspect-tabs { grid-column: span 2; display: flex; gap: 10px; }
+.tab-btn { background: #333; flex: 1; padding: 15px; border: 1px solid #444; }
+.tab-btn.active { background: #ff3333; border-color: #fff; }
+.chat-wrapper { background: #222; border: 1px solid #444; display: flex; flex-direction: column; height: 400px; }
+.chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.input-area { display: flex; border-top: 1px solid #444; }
+.input-area input { flex: 1; border: none; padding: 15px; margin: 0; }
+.message { padding: 10px; border-radius: 5px; max-width: 75%; }
+.player-msg { background: #0055ff; align-self: flex-end; color: white; }
+.suspect-msg { background: #333; align-self: flex-start; border-left: 4px solid #ff3333; }
+.system-msg { font-style: italic; color: #888; text-align: center; }
+.action-panel { background: #2a2a2a; padding: 20px; border: 1px solid #444; text-align: center; }
+.accuse-btn { background: #ffcc00; color: #000; width: 100%; padding: 15px 0; }
+.accuse-btn:hover { background: #cca300; }
+.won { color: #00ff00; }
+.lost { color: #ff3333; }

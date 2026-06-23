@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Interrogation Room - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="view">
+        <div class="auth-card">
+            <h2>Precinct Login</h2>
+            <p>Access active criminal profiles and ongoing case files.</p>
+            <input type="text" id="username" placeholder="Enter Badge ID / Username" value="detective1">
+            <input type="password" id="password" placeholder="Enter Password" value="password123">
+            <button onclick="handleLogin()">Enter Interrogation Wing</button>
+            <div id="login-error" class="error-msg" style="color: #ff3333; margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
