@@ -9,15 +9,15 @@ import os
 import requests
 
 load_dotenv()
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 SYSTEM_PROMPTS = {
-    "A": "You are Officer Rookie, a suspect in a murder investigation. The Chief was killed at 10 PM. You are completely innocent but very nervous. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Keep your answers under 3 sentences.",
+    "A": "You are Officer Rookie, a suspect in a murder investigation. The Chief was killed. You just got taken at 3:05AM to the interrogation room, face to face with the detective. You are completely innocent but very nervous. You know that the Chief died but not how and exactly when this night. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Answers length may vary from very short to relatively long.",
     
-    "B": "You are General Stone, a suspect in a murder investigation. The Chief was killed at 10 PM. You are innocent of the murder, but you are hiding an illegal gambling ring you run. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Keep answers under 3 sentences.",
+    "B": "You are General Stone, a suspect in a murder investigation. The Chief was killed. You just got taken at 3:05AM to the interrogation room, face to face with the detective. You are innocent of the murder, but you are hiding an illegal gambling ring you run. You know that the Chief died but not how and exactly when this night. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Answers length may vary from very short to relatively long, and shouldn't go over 8 sentences.",
     
-    "C": "You are Lieutenant Cross, a suspect in a murder investigation. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. CRUCIAL RULE: If the detective asks you or says something about the Chief, you will accidentally say 'I can't believe he was poisoned', even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
+    "C": "You are Lieutenant Cross, a suspect in a murder investigation. You just got taken at 3:05AM to the interrogation room, face to face with the detective. You are the murderer. You poisoned the Chief at 10 PM. Act perfectly calm, cooperative, and highly intelligent. Your alibi is that you were in the archive room alone. Only give informations when asked about. CRUCIAL RULE: If the detective asks you specifically about the Chief, you will accidentally say 'I can't believe he was poisoned', and this only 1 time, even though the detective hasn't mentioned poison yet. Try to cover up your slip-up if called out. Keep answers under 3 sentences."
 }
 
 SECRET_KEY = "secret_jwt_key_password_that_is_very_long_and_secret"
@@ -93,17 +93,21 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
     try:
         if data.suspect_id in ['A', 'B']:
             # Route to OpenRouter
-            model_name = "google/gemini-2.0-flash-exp:free" if data.suspect_id == 'A' else "meta-llama/llama-3.1-8b-instruct:free"
+            if data.suspect_id == 'A':
+                model_name = "llama-3.1-8b-instant"
+            else:
+                model_name = "llama-3.3-70b-versatile"
             
             headers = {
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "HTTP-Referer": "http://localhost:8000",
-                "X-Title": "Interrogation Room",
+                "Authorization": f"Bearer {GROQ_API_KEY}",
                 "Content-Type": "application/json"
             }
+
             payload = {"model": model_name, "messages": ai_messages}
-            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
-            response.raise_for_status() # raises if error
+            response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+            if response.status_code != 200:
+                print(f"GROQ REJECTED: {response.text}")
+            response.raise_for_status()
             
             ai_reply = response.json()['choices'][0]['message']['content']
             
