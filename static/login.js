@@ -20,8 +20,12 @@ async function handleLogin() {
         //we save the jwt
         sessionStorage.setItem('jwt_token', data.token);
         sessionStorage.setItem('username', user); 
-        sessionStorage.setItem('currentSessionId', data.session_id);     
         //and then redirect
+        sessionStorage.setItem('currentSessionId', data.session_id);
+
+        sessionStorage.setItem('questionCount', 0);
+        sessionStorage.removeItem('timeoutLoss');
+
         window.location.href = '/interrogation.html';
         
     } catch (err) {
