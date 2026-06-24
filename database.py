@@ -1,5 +1,8 @@
 import sqlite3
 import os
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 DB_NAME = "database.db"
 
@@ -50,15 +53,16 @@ def init_db():
         )
     ''')
     
-    # If it's empty we create a basic admin and player user
     cursor.execute("SELECT COUNT(*) FROM users")
     if cursor.fetchone()[0] == 0:
-        cursor.execute("INSERT INTO users (username, password, role) VALUES ('admin', 'admin', 'admin')")
-        cursor.execute("INSERT INTO users (username, password, role) VALUES ('detective1', 'password123', 'player')")
+        admin_hash = pwd_context.hash('admin')
+        player_hash = pwd_context.hash('password123')
+        cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, 'admin')", ('admin', admin_hash))
+        cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, 'player')", ('detective1', player_hash))
         
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
     init_db()
-    print("Database initialized successfully with basic users.")
+    print("Database initialized successfully with securely hashed basic users.")
