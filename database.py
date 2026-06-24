@@ -1,8 +1,6 @@
 import sqlite3
 import os
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 DB_NAME = "database.db"
 
@@ -55,8 +53,10 @@ def init_db():
     
     cursor.execute("SELECT COUNT(*) FROM users")
     if cursor.fetchone()[0] == 0:
-        admin_hash = pwd_context.hash('admin')
-        player_hash = pwd_context.hash('password123')
+        
+        admin_hash = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        player_hash = bcrypt.hashpw('password123'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
         cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, 'admin')", ('admin', admin_hash))
         cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, 'player')", ('detective1', player_hash))
         
