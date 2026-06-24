@@ -20,15 +20,17 @@ const sfx = {
 };
 
 sfx.buzz.loop = true;
-sfx.buzz.volume = 0.3;
+sfx.buzz.volume = 0.2;
 sfx.zap.volume = 0.6;
-sfx.type.volume = 0.3;
+sfx.type.volume = 0.5;
 sfx.tick.volume = 0.2;
 sfx.alarm.volume = 0.8;
 
-document.body.addEventListener('click', () => {
-    if (sfx.buzz.paused) sfx.buzz.play();
-}, { once: true });
+// document.body.addEventListener('click', () => {
+//     if (sfx.buzz.paused) sfx.buzz.play();
+// }, { once: true });
+
+let flickerStarted = false;
 
 window.onload = () => {
     const token = sessionStorage.getItem('jwt_token');
@@ -45,7 +47,6 @@ window.onload = () => {
     
     updateClockUI();
     renderChat();
-    startRandomFlicker();
 };
 
 function openOverlay(instant = false) {
@@ -91,6 +92,15 @@ function openOverlay(instant = false) {
 function closeOverlay() {
     document.getElementById('story-overlay').classList.add('hidden');
     clearInterval(typeInterval);
+
+    if (sfx.buzz.paused) {
+        sfx.buzz.play().catch(err => console.log("Audio blocked by browser:", err));
+    }
+    
+    if (!flickerStarted) {
+        startRandomFlicker();
+        flickerStarted = true;
+    }
 }
 
 function updateClockUI() {
@@ -109,7 +119,6 @@ function updateClockUI() {
 
     if (hours >= 7) {
         sfx.alarm.play();
-        alert("07:00 AM. Time is up! The Feds just walked into the precinct.");
         sessionStorage.setItem('timeoutLoss', 'true');
         window.location.href = '/results.html';
     }
