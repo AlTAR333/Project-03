@@ -33,12 +33,21 @@ body {
 }
 
 /* --- Core Containers --- */
-.auth-card, .result-card {
+.auth-card{
     background: #16181a; 
     padding: 40px; 
     border-radius: 4px;
     border: 1px solid #2a2e33; 
     box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.result-card {
+    background: #0d0e10; 
+    border: 1px solid #2a2e33; 
+    padding: 50px;
+    box-shadow: 0 0 50px rgba(0,0,0,1);
+    color: #a0aab0;
     text-align: center;
 }
 
@@ -265,8 +274,15 @@ button:hover {
 ::-webkit-scrollbar-thumb:hover { background: #3e444a; }
 
 /* --- Verdict Colors --- */
-.won { color: #4a9263; }
-.lost { color: #8c2a2a; }
+.won { 
+    color: #4a7c92; /* The cold blue of a 'clean' win */
+    text-shadow: 0 0 10px #4a7c92;
+}
+
+.lost { 
+    color: #8c2a2a; /* The deep red of a failed case */
+    text-shadow: 0 0 10px #8c2a2a;
+}
 
 /* =========================================
    DANGLING LIGHT & ANIMATIONS
