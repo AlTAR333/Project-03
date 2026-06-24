@@ -44,11 +44,40 @@ button:hover { background: #cc0000; }
     background: rgba(0, 0, 0, 0.9); z-index: 1000;
     display: flex; justify-content: center; align-items: center;
 }
+/* Upgraded Overlay Styles for Long Text */
 .overlay-content {
-    background: #111; border: 2px solid #333; padding: 40px;
-    width: 80%; max-width: 600px; position: relative;
-    font-family: 'Courier New', Courier, monospace; color: #00ff00;
-    line-height: 1.6; min-height: 250px; text-shadow: 0 0 5px #00ff00;
+    background: #111; 
+    border: 2px solid #333; 
+    padding: 40px;
+    width: 85%; 
+    max-width: 650px; 
+    position: relative;
+    font-family: 'Courier New', Courier, monospace; 
+    color: #00ff00;
+    line-height: 1.6; 
+    
+    /* NEW: Handle text overflow flawlessly */
+    max-height: 70vh;          /* Caps height at 70% of the viewport height */
+    overflow-y: auto;          /* Adds a scrollbar only if the text overflows */
+    padding-right: 20px;       /* Extra padding so text doesn't touch the scrollbar */
+    
+    text-shadow: 0 0 5px #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+}
+
+/* Optional: Customize the scrollbar to match the terminal look */
+.overlay-content::-webkit-scrollbar {
+    width: 8px;
+}
+.overlay-content::-webkit-scrollbar-track {
+    background: #050505;
+}
+.overlay-content::-webkit-scrollbar-thumb {
+    background: #00aa00;
+    border-radius: 4px;
+}
+.overlay-content::-webkit-scrollbar-thumb:hover {
+    background: #00ff00;
 }
 .close-btn {
     position: absolute; top: 10px; right: 15px; background: none;
