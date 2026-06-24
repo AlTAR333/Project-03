@@ -1,98 +1,328 @@
+@import url('https://fonts.cdnfonts.com/css/digital-7-mono');
+
+/* =========================================
+   THE INTERROGATION ROOM - GRITTY AESTHETIC
+   ========================================= */
+
 body {
     font-family: 'Courier New', Courier, monospace;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    
+    /* Realistic Concrete Interrogation Room */
+    background: 
+        /* 1. The dark room shadows (forces focus on the center) */
+        radial-gradient(circle at 50% 15%, rgba(10, 10, 12, 0.7) 0%, rgba(5, 5, 6, 0.98) 85%),
+        /* 2. Proper Dark Grunge/Concrete Texture */
+        url('https://static.vecteezy.com/system/resources/previews/014/215/048/large_2x/high-resolution-dark-grey-concrete-wall-texture-background-cement-wall-free-photo.jpg') no-repeat center center fixed;
+    background-size: cover;
+    background-color: #050506; /* Fallback color */
+    
+    color: #a0aab0;
     margin: 0;
     padding: 20px;
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevents scrolling when the light swings */
 }
-.view { max-width: 900px; margin: 40px auto; }
-.hidden { display: none !important; }
-.auth-card, .result-card {
-    background: #2a2a2a; padding: 30px; border-radius: 8px;
-    border: 2px solid #ff3333; text-align: center;
-}
-input {
-    width: 80%; padding: 10px; margin: 10px 0;
-    background: #333; border: 1px solid #555; color: #fff;
-}
-button {
-    padding: 10px 20px; background: #ff3333; color: white;
-    border: none; cursor: pointer; font-weight: bold;
-}
-button:hover { background: #cc0000; }
-.game-container { display: grid; grid-template-columns: 1fr 250px; gap: 20px; margin-top: 20px; }
-.suspect-tabs { grid-column: span 2; display: flex; gap: 10px; }
-.tab-btn { background: #333; flex: 1; padding: 15px; border: 1px solid #444; }
-.tab-btn.active { background: #ff3333; border-color: #fff; }
-.chat-wrapper { background: #222; border: 1px solid #444; display: flex; flex-direction: column; height: 400px; }
-.chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.input-area { display: flex; border-top: 1px solid #444; }
-.input-area input { flex: 1; border: none; padding: 15px; margin: 0; }
-.message { padding: 10px; border-radius: 5px; max-width: 75%; }
-.player-msg { background: #0055ff; align-self: flex-end; color: white; }
-.suspect-msg { background: #333; align-self: flex-start; border-left: 4px solid #ff3333; }
-.system-msg { font-style: italic; color: #888; text-align: center; }
-.action-panel { background: #2a2a2a; padding: 20px; border: 1px solid #444; text-align: center; }
-.accuse-btn { background: #ffcc00; color: #000; width: 100%; padding: 15px 0; }
-.accuse-btn:hover { background: #cca300; }
-.won { color: #00ff00; }
-.lost { color: #ff3333; }
 
-/* Overlay & Typewriter Styles */
+.view { 
+    max-width: 900px; 
+    margin: 40px auto; 
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+/* --- Core Containers --- */
+.auth-card, .result-card {
+    background: #16181a; 
+    padding: 40px; 
+    border-radius: 4px;
+    border: 1px solid #2a2e33; 
+    box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.auth-card h2, .result-card h2 {
+    color: #d1d5d8;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+/* --- Inputs & Buttons --- */
+input {
+    width: 80%; 
+    padding: 12px; 
+    margin: 10px 0;
+    background: #0d0e10; 
+    border: 1px solid #2a2e33; 
+    color: #d1d5d8;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+input:focus {
+    outline: none;
+    border-color: #5a6268;
+}
+
+button {
+    padding: 12px 20px; 
+    background: #2a2e33; 
+    color: #d1d5d8;
+    border: 1px solid #3e444a; 
+    cursor: pointer; 
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+
+button:hover { 
+    background: #3e444a; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* --- Game Layout --- */
+.game-container { 
+    display: grid; 
+    grid-template-columns: 1fr 250px; 
+    gap: 20px; 
+    margin-top: 20px; 
+}
+
+/* --- Suspect Tabs (Metal Folders) --- */
+.suspect-tabs { 
+    grid-column: span 2; 
+    display: flex; 
+    gap: 5px; 
+}
+
+.tab-btn { 
+    background: #111315; 
+    flex: 1; 
+    padding: 15px; 
+    border: 1px solid #2a2e33; 
+    border-bottom: none;
+    color: #6a737a;
+}
+
+.tab-btn.active { 
+    background: #16181a; 
+    color: #d1d5d8;
+    border-top: 3px solid #8c2a2a; /* Harsh red accent for the active suspect */
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+}
+
+/* --- Chat Interface --- */
+.chat-wrapper { 
+    background: #0d0e10; 
+    border: 1px solid #2a2e33; 
+    display: flex; 
+    flex-direction: column; 
+    height: 450px; 
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+
+.chat-box { 
+    flex: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+.input-area { 
+    display: flex; 
+    border-top: 1px solid #2a2e33; 
+    background: #111315;
+}
+
+.input-area input { 
+    flex: 1; 
+    border: none; 
+    padding: 15px; 
+    margin: 0; 
+    background: transparent;
+    box-shadow: none;
+}
+
+/* --- Chat Bubbles --- */
+.message { 
+    padding: 12px 15px; 
+    max-width: 80%; 
+    line-height: 1.4;
+}
+
+.player-msg { 
+    background: #1a2226; 
+    align-self: flex-end; 
+    color: #c4d0d6; 
+    border-right: 3px solid #4a7c92; /* Cold blue for the detective */
+}
+
+.suspect-msg { 
+    background: #1a1616; 
+    align-self: flex-start; 
+    color: #d6c4c4;
+    border-left: 3px solid #8c2a2a; /* Dried blood red for suspects */
+}
+
+.system-msg { 
+    font-style: italic; 
+    color: #5a6268; 
+    text-align: center; 
+    background: none;
+    border: none;
+}
+
+/* --- Side Action Panel --- */
+.action-panel { 
+    background: #16181a; 
+    padding: 20px; 
+    border: 1px solid #2a2e33; 
+    text-align: center; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.accuse-btn { 
+    background: #8c2a2a; 
+    color: #fff; 
+    width: 100%; 
+    padding: 15px 0; 
+    border: none;
+    margin-top: 10px;
+}
+
+.accuse-btn:hover { 
+    background: #a63232; 
+}
+
+/* --- Digital Alarm Clock (7-Segment LED Style - Resized) --- */
+.digital-clock {
+    font-family: 'Digital-7 Mono', sans-serif; 
+    font-size: 36px; /* Reduced from 54px */
+    color: #ff0000; 
+    background: #0a0a0c; 
+    padding: 8px 18px; /* Tighter padding */
+    border: 3px solid #050505; /* Thinner plastic bezel */
+    border-radius: 6px; 
+    
+    /* The LED Bloom Effect */
+    text-shadow: 
+        0 0 4px rgba(255, 0, 0, 0.8),
+        0 0 10px rgba(255, 0, 0, 0.6),
+        0 0 15px rgba(255, 0, 0, 0.4); 
+        
+    letter-spacing: 2px; /* Reduced spacing to match the smaller text */
+    box-shadow: 
+        inset 0 0 10px rgba(0,0,0,1), 
+        0 4px 10px rgba(0,0,0,0.8); 
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Story Overlay --- */
 .overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.9); z-index: 1000;
+    background: rgba(0, 0, 0, 0.95); 
+    z-index: 1000;
     display: flex; justify-content: center; align-items: center;
 }
-/* Upgraded Overlay Styles for Long Text */
+
 .overlay-content {
-    background: #111; 
-    border: 2px solid #333; 
+    background: #0a0a0a; 
+    border: 1px solid #333; 
     padding: 40px;
     width: 85%; 
     max-width: 650px; 
     position: relative;
     font-family: 'Courier New', Courier, monospace; 
-    color: #00ff00;
+    color: #b0c4de; /* Pale, cold terminal text */
     line-height: 1.6; 
-    
-    /* NEW: Handle text overflow flawlessly */
-    max-height: 70vh;          /* Caps height at 70% of the viewport height */
-    overflow-y: auto;          /* Adds a scrollbar only if the text overflows */
-    padding-right: 20px;       /* Extra padding so text doesn't touch the scrollbar */
-    
-    text-shadow: 0 0 5px #00ff00;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    max-height: 70vh;          
+    overflow-y: auto;          
+    padding-right: 20px;       
+    text-shadow: 0 0 3px rgba(176, 196, 222, 0.5);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 1);
 }
 
-/* Optional: Customize the scrollbar to match the terminal look */
-.overlay-content::-webkit-scrollbar {
-    width: 8px;
-}
-.overlay-content::-webkit-scrollbar-track {
-    background: #050505;
-}
-.overlay-content::-webkit-scrollbar-thumb {
-    background: #00aa00;
-    border-radius: 4px;
-}
-.overlay-content::-webkit-scrollbar-thumb:hover {
-    background: #00ff00;
-}
 .close-btn {
     position: absolute; top: 10px; right: 15px; background: none;
-    color: #fff; font-size: 24px; border: none; cursor: pointer;
-}
-.close-btn:hover { color: #ff3333; }
-
-/* Digital Alarm Clock */
-.digital-clock {
-    font-family: 'Courier New', Courier, monospace; font-size: 32px;
-    color: #ff3333; background: #000; padding: 10px 20px;
-    border: 3px solid #222; border-radius: 5px; font-weight: bold;
-    text-shadow: 0 0 10px #ff3333; letter-spacing: 2px;
+    color: #5a6268; font-size: 24px; border: none; cursor: pointer;
+    box-shadow: none;
 }
 
-/* Secondary Button */
-.review-btn { background: #444; color: white; width: 100%; padding: 12px 0; border-radius: 4px;}
-.review-btn:hover { background: #666; }
+.close-btn:hover { color: #d1d5d8; background: none; box-shadow: none; }
+
+/* Custom Scrollbar for Overlay & Chat */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0c; border-left: 1px solid #2a2e33; }
+::-webkit-scrollbar-thumb { background: #2a2e33; }
+::-webkit-scrollbar-thumb:hover { background: #3e444a; }
+
+/* --- Verdict Colors --- */
+.won { color: #4a9263; }
+.lost { color: #8c2a2a; }
+
+/* =========================================
+   DANGLING LIGHT & ANIMATIONS
+   ========================================= */
+
+.dangling-light {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    /* Sets the pivot point to the absolute top center of the screen */
+    transform-origin: top center; 
+    /* The swing physics: 6 seconds per full swing, infinitely */
+    animation: swing 6s ease-in-out infinite; 
+    z-index: -1; /* Keeps the light behind your chat windows */
+    pointer-events: none; /* Ensures you can still click things behind it */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wire {
+    width: 2px;
+    height: 10vh; /* Shortened so it hangs closer to the ceiling */
+    background: #111;
+    border-right: 1px solid #333;
+}
+
+.bulb {
+    width: 20px;
+    height: 30px;
+    background: #fff8e7; /* Faint yellow-white bulb */
+    border-radius: 50% 50% 20% 20%;
+    /* This creates the massive dynamic room lighting */
+    box-shadow: 
+        0 0 20px 5px rgba(255, 248, 231, 0.4),    /* Core glow */
+        0 0 100px 50px rgba(200, 220, 240, 0.1),  /* Cold outer glow */
+        0 150px 500px 200px rgba(255, 255, 255, 0.03); /* The room fill light */
+    /* Adds the failing, faulty electrical flicker */
+    animation: flicker 5s infinite alternate;
+}
+
+/* --- Keyframe Physics --- */
+
+/* The Pendulum Swing */
+@keyframes swing {
+    0% { transform: rotate(6deg); }
+    50% { transform: rotate(-6deg); }
+    100% { transform: rotate(6deg); }
+}
+
+/* The Faulty Wiring Flicker */
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        opacity: 1; /* Light is ON */
+    }
+    20%, 24%, 55% {
+        opacity: 0.3; /* Light flickers OFF */
+    }
+}
