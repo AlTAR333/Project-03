@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scotland Yards - Issue New Badge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="view" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <div class="auth-card" style="width: 100%; max-width: 400px;">
+            <h2>Issue New Badge</h2>
+            <p style="color: #6a737a; font-size: 0.9em; margin-bottom: 20px;">Register your credentials with Scotland Yards.</p>
+            
+            <input type="text" id="reg-username" placeholder="Enter Detective Name..." required>
+            <input type="password" id="reg-password" placeholder="Enter Secure Passcode..." required>
+            
+            <div id="reg-error" style="color: #ff3333; margin: 10px 0; min-height: 20px; font-size: 0.9em;"></div>
+            <div id="reg-success" style="color: #4a9263; margin: 10px 0; min-height: 20px; font-size: 0.9em;"></div>
+            
+            <button onclick="handleRegister()" style="width: 100%; margin-top: 10px;">Register</button>
+            
+            <p style="margin-top: 20px; font-size: 0.9em;">
+                Already have a badge? <a href="/index.html" style="color: #4a7c92; text-decoration: none;">Return to Login</a>
+            </p>
+        </div>
+    </div>
+    <script src="register.js"></script>
+</body>
+</html>

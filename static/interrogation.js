@@ -150,3 +150,8 @@ async function sendQuestion() {
 }
 
 function goToAccusalView() { window.location.href = '/results.html'; }
+
+function logout() {
+    sessionStorage.clear();
+    window.location.href = '/index.html';
+}
