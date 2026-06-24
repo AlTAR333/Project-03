@@ -4,3 +4,5 @@ pydantic
 pyjwt
 requests
 python-dotenv
+passlib
+bcrypt

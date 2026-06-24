@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
+from passlib.context import CryptContext
 import database
 import schemas
 import jwt
@@ -23,6 +24,14 @@ SYSTEM_PROMPTS = {
 SECRET_KEY = "secret_jwt_key_password_that_is_very_long_and_secret"
 ALGORITHM = "HS256"
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
 def verify_token(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid token format")
@@ -43,7 +52,7 @@ async def lifespan(app: FastAPI):
     yield
 
     print("Shutting down the precinct...")
-    # nothing yet
+    # nothing for now
 
 app = FastAPI(title="The Interrogation Room API", lifespan=lifespan)
 
@@ -51,11 +60,11 @@ app = FastAPI(title="The Interrogation Room API", lifespan=lifespan)
 @app.post("/api/auth/login")
 def login(data: schemas.LoginRequest):
     conn = database.get_db_connection()
-    user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ?", (data.username, data.password)).fetchone()
-    
-    if not user:
-        conn.close()
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+    user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
+    conn.close()
+
+    if not user or not verify_password(data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid badge credentials.")
     
     cursor = conn.cursor()
     cursor.execute("INSERT INTO game_sessions (user_id, status, total_questions) VALUES (?, 'in_progress', 0)", (user["id"],))
@@ -67,6 +76,24 @@ def login(data: schemas.LoginRequest):
     encoded_jwt = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
     
     return {"status": "success", "token": encoded_jwt, "session_id": new_session_id }
+
+@app.post("/api/auth/register")
+def register(data: schemas.AuthRequest):
+    conn = database.get_db_connection()
+    existing_user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
+    if existing_user:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Badge number (username) already registered.")
+    
+    hashed_password = get_password_hash(data.password)    
+    conn.execute(
+        "INSERT INTO users (username, password) VALUES (?, ?)", 
+        (data.username, hashed_password)
+    )
+    conn.commit()
+    conn.close()
+    
+    return {"message": "Registration successful. You can now log in."}
 
 @app.post("/api/interrogate")
 def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(verify_token)):

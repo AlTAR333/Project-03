@@ -12,3 +12,7 @@ class InterrogationRequest(BaseModel):
 class AccusationRequest(BaseModel):
     session_id: int
     accused_suspect: str
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
