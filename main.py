@@ -177,15 +177,19 @@ def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_tok
     hours = 4 + (minutes_elapsed // 60)
     minutes = minutes_elapsed % 60
     final_time = f"{hours:02d}:{minutes:02d} AM"
-    
+
     if data.accused_suspect == 'TIMEOUT':
         status = "lost"
         is_correct = False
-        summary = "The clock struck 7:00 AM. The FBI walked in and took over jurisdiction. You were taken off the case, and the killer walked free."
+        summary = "07:00 AM. The heavy steel door swings open, but it's not the Chief's successor. It's a team of Federal agents, badges gleaming, expressions bored. They hold a warrant for the entire precinct. Your time is up. As they strip you of your access card, you watch the real killer slip into the shadows, emboldened by your failure. You are escorted out, the weight of the unsolved case sinking into your bones."
     else:
-        is_correct = data.accused_suspect == correct_culprit
+        is_correct = data.accused_suspect == 'C'
         status = "won" if is_correct else "lost"
-        summary = "Suspect C cracked under pressure. You solved the case!" if is_correct else "You locked up an innocent citizen. The real killer got away."
+        
+        if is_correct:
+            summary = "The Lieutenant looks at the handcuffs, then back at you with a chilling, calculated calm. 'You were lucky,' he whispers. You didn't just solve a murder, you unmasked a monster hiding in plain sight. As you lead him out into the dawn light, the precinct falls silent. You've earned your badge for another day."
+        else:
+            summary = "The suspect looks at you with sheer confusion, then anger. You didn't find the truth, you found a scapegoat. The evidence doesn't hold up, the real killer is still out there, and the Feds are already laughing at your report. You didn't just fail the case; you ruined an innocent life. Your desk will be cleared by noon."
     
     conn.execute("UPDATE game_sessions SET status = ? WHERE id = ?", (status, data.session_id))
     conn.commit()
