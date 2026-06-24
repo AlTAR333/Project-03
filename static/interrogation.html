@@ -25,9 +25,9 @@
 
         <div class="game-container">
             <div class="suspect-tabs">
-                <button id="tab-A" class="tab-btn active" onclick="switchSuspect('A')">Suspect A (Rookie)</button>
-                <button id="tab-B" class="tab-btn" onclick="switchSuspect('B')">Suspect B (General)</button>
-                <button id="tab-C" class="tab-btn" onclick="switchSuspect('C')">Suspect C (Lieutenant)</button>
+                <button id="tab-A" class="tab-btn active" onclick="switchSuspect('A')">Suspect A</button>
+                <button id="tab-B" class="tab-btn" onclick="switchSuspect('B')">Suspect B</button>
+                <button id="tab-C" class="tab-btn" onclick="switchSuspect('C')">Suspect C</button>
             </div>
 
             <div class="chat-wrapper">
@@ -42,7 +42,7 @@
             
             <div class="action-panel">
                 <h4>Case Actions</h4>
-                <button class="review-btn" onclick="openOverlay()">Review Briefing</button>
+                <button class="review-btn" onclick="openOverlay(true)">Review Briefing</button>
                 
                 <p style="margin-top:20px;">Ready to declare your official findings?</p>
                 <button class="accuse-btn" onclick="goToAccusalView()">File Formal Accusation</button>
