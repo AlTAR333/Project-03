@@ -2,12 +2,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
-from passlib.context import CryptContext
 import database
 import schemas
 import jwt
 import os
 import requests
+import bcrypt
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -24,13 +24,13 @@ SYSTEM_PROMPTS = {
 SECRET_KEY = "secret_jwt_key_password_that_is_very_long_and_secret"
 ALGORITHM = "HS256"
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def get_password_hash(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def verify_token(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
@@ -61,9 +61,8 @@ app = FastAPI(title="The Interrogation Room API", lifespan=lifespan)
 def login(data: schemas.LoginRequest):
     conn = database.get_db_connection()
     user = conn.execute("SELECT * FROM users WHERE username = ?", (data.username,)).fetchone()
-    conn.close()
-
     if not user or not verify_password(data.password, user["password"]):
+        conn.close()
         raise HTTPException(status_code=401, detail="Invalid badge credentials.")
     
     cursor = conn.cursor()
@@ -75,7 +74,7 @@ def login(data: schemas.LoginRequest):
     token_payload = {"user_id": user["id"], "username": user["username"], "role": user["role"]}
     encoded_jwt = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
     
-    return {"status": "success", "token": encoded_jwt, "session_id": new_session_id }
+    return {"status": "success", "token": encoded_jwt, "session_id": new_session_id}
 
 @app.post("/api/auth/register")
 def register(data: schemas.AuthRequest):
