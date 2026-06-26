@@ -33,7 +33,7 @@ You have exactly **3 hours** before the Feds arrive. Three key suspects are lock
 
 ---
 
-## 🚀 Installation & Technical Execution
+## Installation & Technical Execution
 
 ### Prerequisites
 Ensure you have Python 3.10+ installed on your machine. 
@@ -41,20 +41,7 @@ Ensure you have Python 3.10+ installed on your machine.
 ### Dependencies
 Install the required micro-framework libraries directly via your system shell:
 ```bash
-pip install fastapi uvicorn bcrypt PyJWT
-```
-
-### Audio Assets Requirement
-Create an internal asset directory structure for static sounds:
-```text
-static/
-└── sounds/
-    ├── neon-buzz.mp3   (Continuous loop, low-volume hum)
-    ├── zap.mp3         (Sharp static electrical pop)
-    ├── typewriter.mp3  (Mechanical single-key click)
-    ├── tick.mp3        (Heavy digital clock increment sound)
-    ├── alarm.mp3       (Blaring digital 7:00 AM alarm siren)
-    └── slam.mp3        (Heavy tactical folder thud)
+pip install -r requirements.txt
 ```
 
 ### Initializing the Hashed Database
@@ -72,11 +59,11 @@ Spin up the FastAPI server via the standard Uvicorn interface:
 uvicorn main:app --reload
 ```
 Once initialized, navigate your local browser window to:  
-🔗 **`http://127.0.0.1:8000`**
+**`http://127.0.0.1:8000`**
 
 ---
 
-## 🗄️ Endpoints and Architecture Schema
+## Endpoints and Architecture Schema
 * `POST /api/auth/register` : Creates unique user entities with native Bcrypt password generation.
 * `POST /api/auth/login` : Validates secure credentials and generates a signed JWT payload.
 * `POST /api/interrogate` : Tracks unique session contexts, updates individual question limits, and logs chat timelines.
@@ -84,6 +71,6 @@ Once initialized, navigate your local browser window to:
 
 ---
 
-## ⚖️ Credits
+## Credits
 * **Developer:** Armand VIEAU
 * **Context:** Final Semester Project submission for EPITA.
