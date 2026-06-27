@@ -200,16 +200,14 @@ function startRandomFlicker() {
     if (!bulb) return;
 
     setInterval(() => {
-        // 10% chance to flicker every 2 seconds
         if (Math.random() > 0.90) {
-            bulb.style.opacity = '0.2'; // Dim the light
+            bulb.style.opacity = '0.2';
             sfx.zap.currentTime = 0;
-            sfx.zap.play();             // Play electrical pop
+            sfx.zap.play();
             
-            // Turn it back on quickly
             setTimeout(() => {
                 bulb.style.opacity = '1';
-            }, 100 + Math.random() * 300); // Random duration for the flicker
+            }, 100 + Math.random() * 300);
         }
     }, 2000);
 }
