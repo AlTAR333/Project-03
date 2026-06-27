@@ -17,14 +17,17 @@ const sfx = {
     type: new Audio('/sounds/typewriter.mp3'),
     tick: new Audio('/sounds/tick.mp3'),
     alarm: new Audio('/sounds/alarm.mp3'),
+    music: new Audio('/sounds/background_intero_music.mp3')
 };
 
 sfx.buzz.loop = true;
+sfx.music.loop = true;
 sfx.buzz.volume = 0.2;
-sfx.zap.volume = 0.6;
+sfx.zap.volume = 0.8;
 sfx.type.volume = 0.5;
 sfx.tick.volume = 0.2;
 sfx.alarm.volume = 0.8;
+sfx.music.volume = 0.4;
 
 // document.body.addEventListener('click', () => {
 //     if (sfx.buzz.paused) sfx.buzz.play();
@@ -94,7 +97,11 @@ function closeOverlay() {
     clearInterval(typeInterval);
 
     if (sfx.buzz.paused) {
-        sfx.buzz.play().catch(err => console.log("Audio blocked by browser:", err));
+        sfx.buzz.play().catch(err => console.log("Audio buzz blocked by browser:", err));
+    }
+
+    if (sfx.music.paused) {
+        sfx.music.play().catch(err => console.log("Audio music blocked by browser:", err));
     }
     
     if (!flickerStarted) {
