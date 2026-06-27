@@ -14,7 +14,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 SYSTEM_PROMPTS = {
-    "A": "You are Officer Rookie, a suspect in a murder investigation. The Chief was killed. You just got taken at 4:00AM to the interrogation room, face to face with the detective. You are completely innocent but very nervous. You know that the Chief died but not how and exactly when this night. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Answers length may vary from very short to relatively long.",
+    "A": "You are Officer Rookie, a suspect in a murder investigation. The Chief was killed. You just got taken at 4:00AM to the interrogation room, face to face with the detective. You are completely innocent but very nervous. You know that the Chief died but not how and exactly when this night. If asked where you were at 10 PM, admit you were in the breakroom eating the Chief's personal donuts. Never break character. Answers length may vary from very short to relatively long, shoudln't go over 9 sentences.",
     
     "B": "You are General Stone, a suspect in a murder investigation. The Chief was killed. You just got taken at 4:00AM to the interrogation room, face to face with the detective. You are innocent of the murder, but you are hiding an illegal gambling ring you run. You know that the Chief died but not how and exactly when this night. Be highly defensive, hostile, and evasive. Deflect questions. If pressed hard about 10 PM, you will angrily admit you were in your car placing bets, not murdering anyone. Answers length may vary from very short to relatively long, and shouldn't go over 6 sentences.",
     
@@ -26,11 +26,11 @@ ALGORITHM = "HS256"
 
 def get_password_hash(password: str) -> str:
     salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 def verify_token(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
@@ -85,10 +85,7 @@ def register(data: schemas.AuthRequest):
         raise HTTPException(status_code=400, detail="Badge number (username) already registered.")
     
     hashed_password = get_password_hash(data.password)    
-    conn.execute(
-        "INSERT INTO users (username, password) VALUES (?, ?)", 
-        (data.username, hashed_password)
-    )
+    conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (data.username, hashed_password))
     conn.commit()
     conn.close()
     
@@ -96,7 +93,7 @@ def register(data: schemas.AuthRequest):
 
 @app.post("/api/interrogate")
 def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(verify_token)):
-    if data.suspect_id not in ['A', 'B', 'C']:
+    if data.suspect_id not in ["A", "B", "C"]:
         raise HTTPException(status_code=400, detail="Invalid Suspect ID")
     conn = database.get_db_connection()
     # 1. Log player's question
@@ -117,9 +114,9 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
     ai_reply = "..."
     
     try:
-        if data.suspect_id in ['A', 'B']:
+        if data.suspect_id in ["A", "B"]:
             # Route to OpenRouter
-            if data.suspect_id == 'A':
+            if data.suspect_id == "A":
                 model_name = "llama-3.1-8b-instant"
             else:
                 model_name = "llama-3.3-70b-versatile"
@@ -135,9 +132,9 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
                 print(f"GROQ REJECTED: {response.text}")
             response.raise_for_status()
             
-            ai_reply = response.json()['choices'][0]['message']['content']
+            ai_reply = response.json()["choices"][0]["message"]["content"]
             
-        elif data.suspect_id == 'C':
+        elif data.suspect_id == "C":
             # Route to Mistral
             headers = {
                 "Authorization": f"Bearer {MISTRAL_API_KEY}",
@@ -147,7 +144,7 @@ def interrogate(data: schemas.InterrogationRequest, user_data: dict = Depends(ve
             response = requests.post("https://api.mistral.ai/v1/chat/completions", headers=headers, json=payload)
             response.raise_for_status()
             
-            ai_reply = response.json()['choices'][0]['message']['content']
+            ai_reply = response.json()["choices"][0]["message"]["content"]
             
     except Exception as e:
         print(f"API Error: {e}")
@@ -178,12 +175,12 @@ def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_tok
     minutes = minutes_elapsed % 60
     final_time = f"{hours:02d}:{minutes:02d} AM"
 
-    if data.accused_suspect == 'TIMEOUT':
+    if data.accused_suspect == "TIMEOUT":
         status = "lost"
         is_correct = False
         summary = "07:00 AM. The heavy steel door swings open, but it's not the Chief's successor. It's a team of Federal agents, badges gleaming, expressions bored. They hold a warrant for the entire precinct. Your time is up. As they strip you of your access card, you watch the real killer slip into the shadows, emboldened by your failure. You are escorted out, the weight of the unsolved case sinking into your bones."
     else:
-        is_correct = data.accused_suspect == 'C'
+        is_correct = data.accused_suspect == "C"
         status = "won" if is_correct else "lost"
         
         if is_correct:
@@ -195,12 +192,6 @@ def accuse(data: schemas.AccusationRequest, user_data: dict = Depends(verify_tok
     conn.commit()
     conn.close()
     
-    return {
-        "outcome": status,
-        "correct": is_correct,
-        "time": final_time,
-        "questions": total_q,
-        "summary": summary
-    }
+    return {"outcome": status, "correct": is_correct, "time": final_time, "questions": total_q, "summary": summary}
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
