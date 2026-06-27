@@ -207,7 +207,7 @@ function startRandomFlicker() {
     if (!bulb) return;
 
     setInterval(() => {
-        if (Math.random() > 0.90) {
+        if (Math.random() > 0.80) {
             bulb.style.opacity = '0.2';
             sfx.zap.currentTime = 0;
             sfx.zap.play();
