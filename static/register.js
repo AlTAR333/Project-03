@@ -4,7 +4,6 @@ async function handleRegister() {
     const errorDiv = document.getElementById('reg-error');
     const successDiv = document.getElementById('reg-success');
     
-    // Reset messages
     errorDiv.innerText = "";
     successDiv.innerText = "";
 
@@ -26,12 +25,10 @@ async function handleRegister() {
             throw new Error(data.detail || "Database error occurred.");
         }
         
-        // Show success message and clear inputs
         successDiv.innerText = "Badge issued successfully! Redirecting to login...";
         document.getElementById('reg-username').value = "";
         document.getElementById('reg-password').value = "";
         
-        // Automatically send them back to the login page after 2 seconds
         setTimeout(() => {
             window.location.href = '/index.html';
         }, 2000);
